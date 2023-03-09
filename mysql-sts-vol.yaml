@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-sts-vol
+spec:
+  selector:
+    matchLabels:
+      app: mysql-sts-vol
+  serviceName: myapp-svc-headless
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: mysql-sts-vol
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: rock-ceph-block
